@@ -1,0 +1,322 @@
+// Conteito de imutabilidade:
+// Não podemos manipular/alterar a variavel do estado de uma forma direta, nos precisamo sobrepor essa variavel.
+// Quando usamos o useState ele nos retorna um Array com duas posições [valor, funcaoDeAtualização]
+
+const [counter, setCounter] = useState(0);
+
+// Sempre que você querer injetar qualquer coisa que seja JS dentro do HTML, se deve utilizar chaves {}
+// É importante fazer uma desestruturação para saber quais propriedades a função recebe.
+// Ao inves de receber o objeto de propriedades inteiro (props), coloca-se {} e dentro digite as propriedades que deseja obter
+
+function increment(){
+    setCounter(counter + 1);
+};
+
+<!-- 
+<div>
+    <Header>Contador:{ counter }</Header>
+    <button onClick={ increment } >Incrementar</button>
+</div>
+ -->
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+//Sempre importar o React no começa da página
+// Sempre que o estado (useState) é alterado o componente vai renderizar novamente, exibindo as novas informações na tela
+import React, { useState } from 'react';
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+//JSX (JavaScript XML):
+//Quando o HTML está integrado dentro do JavaScript
+
+//Um componente no react é uma função que retorna HTML
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+//Faça o HTML primeiro depois pense no CSS
+
+
+
+// Abilitar o "auto-complete" do React: 
+// Ctrl + Shift + P 
+// Digitar settings.json 
+// Lá dentro colocar os seguintes códigos:
+// "emmet.syntaxProfiles": { "javascript": "jsx"},
+// "emmet.includeLanguages": { "javascript": "javascriptreact"},
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// Instalar o pacote de icones do react
+// npm install react-icons
+// Para chamar os icones:
+// import { FiLogIn } from 'react-icons/fi';
+// Dentro das {} é o nome do icone. Aquele /fi pode ser substituido por qualquer outra biblioteca de icones que estiver disponivel no pacote do react-icons
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// Instalar pacote para lidar com rotas
+// npm install react-router-dom
+// Para chamar as rotas: 
+// import { BrowserRouter, Route, Switch } from 'react-router-dom';
+// Olhar documentação se quiser entender melhor
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// Fazer a ligação entro o Front-end feito com React e o Back-end feito em node
+// Vá para a pasta do Back-end pelo terminal e execute "npm start"
+// Agora instale um cliete HTTP na pasta Front-end : npm install axios
+// Após instalar crie uma pasta "services" que fica todo tipo de arquivo que prove algum tipo de integração com serviço externo, e dentro crir "api.js".
+// importar o axios la dentro e escrever :
+
+const api = axios.create({
+    baseURL: 'http://localhost:3333',
+});
+
+// Agora vá para a pasta Register ligação e importe a api (no caso a primeira pasta usada foi a Register)
+// Agora dentro da função que contem o HTML crie outra função:
+
+function handleRegister(e){
+    e.preventDefault();
+}
+
+// e.preventDefault serve para ao clicar em submit no registro a página não recarregue  
+// Para isso funcionar dentro do form escreava "onSubmit={ handleRegister }" (handleRegister é o nome da função, mas pode ser qualquer outro).
+
+// Agora é necessário armazenar os dados para mandar para nossa api, a maneira mais "popular" é usando o useState para cada um dos inputs que contem os meus dados
+// O código no final ficará assim : 
+
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [whatsapp, setWhatsapp] = useState('');
+    const [city, setCity] = useState('');
+    const [uf, setUf] = useState('');
+
+// Lembrando que isso foi para cada input que eu tinha criado, caso tenha mais inputs ou menos deve conter apenas os que você tem criado.
+// Agora você deve colocar para cada input o value={name}
+// E tambem o onChange={ e => setName(e.target.value) }
+// o código final ficará assim : 
+
+<!-- <input 
+    placeholder="Nome da ONG"
+    value={name}
+    onChange={ e => setName(e.target.value) }
+/> -->
+
+// Isso devera ser repetido para cada input da sua aplicação e obvio mudando os nomes respeitando o nome que você deu na const useState
+
+// Agora dentro da função handleRegister crie: 
+
+const data = {
+    name,
+    email,
+    whatsapp,
+    city,
+    uf,
+};
+
+try{
+    const response = await api.post('ongs', data);
+    alert(`Seu ID de acesso: ${response.data.id}`);
+} catch (err) {
+    alert('Erro no cadastro, tente novamente.')
+}
+
+
+// Sempre que formos utilizar o "await" é necessário escrever "async" na função : 
+async function handleRegister(e)
+
+// Após fazer cadastro voltar para página principal
+// Adicione useHistory na importação do react-router-dom
+// Crie uma const com o nome de history e faça ela receber useHistory();
+// agora dentro do Try adicione abaixo do alert history.push('/');
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+// Fazer a ligação da pasta Logon/Login
+// Basicamente é a mesma coisa da outra página
+// Importe o useState
+// Importe a api
+
+// crie uma const [] = useState('');
+// E faça o mesmo processo com os inputs (igual a pasta Register)
+
+// Criar a função handelLogin igual a na outra página
+
+// Nota : Sempre criar o e.preventDefault(); quando for mexer com formulários
+
+// Dentro da função : 
+
+try {
+    const response = await api.post('sessions', { id });
+
+    localStorage.setItem('ongId', id)
+    localStorage.setItem('ongName', response.data.name)
+} catch (err) {
+alert('Falha no login, tente novamente.');
+}
+
+//localStorage serve para salvar dados no storage do navegador
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// Fazer ligação da pasta Profile
+// Começe importanto junto do React , o {useEffect} e o { useState }
+
+// Coloque useEffect() dentro da função
+// Ele recebe 2 parâmetros.
+// 1° qual função eu quero que seja executada.
+// 2° quando esta função sera executada.
+// O código fica assim :
+
+useEffect(() => {
+    api.get('profile', {
+        headers: {
+            Authorization: ongId,
+        }
+    }) .then(response => {
+        setIncidents(response.data);
+    })
+}, [ongId] );
+
+// Após isso vá na sua li e deixa apenas uma
+// Recorte ela e coloque o seguinte código : 
+
+<!-- 
+    { incidents.map(incident => (
+        <li key={incident.id}>
+            <strong>CASO:</strong>
+            <p>{ incident.title }</p>
+
+            <strong>DESCRIÇÂO:</strong>
+            <p>{ incident.description }</p>
+
+            <strong>VALOR:</strong>
+            <p>{ incident.value }</p>
+
+            <button type="button">
+                <FiTrash2 size={20} color="#a8a8b3" />
+            </button>
+        </li>
+    )) }
+
+-->
+
+
+
+// Formatar em reais 
+<!--
+<strong>VALOR:</strong>
+<p>{ Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL'}).format(incident.value)}</p>
+
+-->
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+// Deletar um caso
+// Criar uma nova function handleDeleteIncident
+
+async function handleDeleteIncident(id){
+    try {
+        
+        await api.delete(`incidents/${id}`, {
+            headers: {
+                Authorization: ongId,
+            }
+        });
+
+    } catch (err) {
+        alert('Erro ao tentar deletar, tente novamente');
+    }
+}
+
+
+// Agora deve chamar a função handleDeleteIncident no nosso button
+
+<!-- 
+
+<button onClick={ () => handleDeleteIncident(incident.id) } type="button">
+    <FiTrash2 size={20} color="#a8a8b3" />
+</button>
+
+-->
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// Deletar em tempo real
+// Adicionar esta linha no try 
+
+setIncidents(incidents.filter(incident => incident.id !== id));
+
+
+
+// Fazer logout
+// importar useHistory
+// Criar uma função handleLogout
+
+function handleLogout(){
+    localStorage.clear();
+
+    history.push('/');
+}
+
+// E colocar handleLogout no button de logout :
+
+<!-- 
+
+    <button onClick={ handleLogout } type="button">
+        <FiPower size={18} color="#E02041" />
+    </button>
+
+ -->
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+// Fazer ligação de New Incident 
+
+// Importar useState
+// Criar as const [] = useState(''); uma para cada input 
+// E preencher igual nas outras vezes
+
+// Importar a api 
+// Colocar async na função e o e.preventDefault();  
+// criar um Try e catch 
+// Importar useHistory
+
+async function handleNewIncident(e){
+    e.preventDefault();
+
+    const data = {
+        title,
+        description,
+        value,
+    };
+
+    try {
+        await api.post('incidents', data, {
+            headers: {
+                Authorization: ongId,
+            }
+        })
+
+        history.push('/profile');
+    }
+    
+    catch (err) {
+        alert('Erro ao cadastrar caso, tente novamente.');
+    }
+}

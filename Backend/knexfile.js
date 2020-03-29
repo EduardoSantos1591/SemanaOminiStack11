@@ -2,6 +2,7 @@
 
 module.exports = {
 
+  
   development: {
     client: 'sqlite3',
     connection: {
@@ -11,10 +12,27 @@ module.exports = {
     migrations:{
       directory: './src/database/migrations'
     },
+    
 
     useNullAsDefault: true,
 
   },
+
+  test: {
+    client: 'sqlite3',
+    connection: {
+      filename: './src/database/test.sqlite'
+    },
+
+    migrations:{
+      directory: './src/database/migrations'
+    },
+    
+
+    useNullAsDefault: true,
+
+  },
+  
 
   staging: {
     client: 'postgresql',
@@ -46,6 +64,6 @@ module.exports = {
     migrations: {
       tableName: 'knex_migrations'
     }
-  }
+  },
 
-};
+}
